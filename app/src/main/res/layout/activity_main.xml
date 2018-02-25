@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="3dp"
+    tools:context=".activity.MainActivity">
+    <TextView
+        android:id="@+id/TextServeur"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:ems="12"
+        android:text="Serveur : Marecage de zangard">
+    </TextView>
+
+    <EditText
+        android:id="@+id/NameItem"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:hint="Nom de l'item">
+    </EditText>
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ProgresseBar"
+
+        android:layout_marginTop="80dp"
+        android:layout_centerHorizontal="true"
+
+
+        />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/listview"
+        android:layout_width="wrap_content"
+        android:layout_height="365dp"
+        android:layout_marginTop="55dp"
+        android:scrollbars="vertical"/>
+
+
+
+
+
+    <ImageButton
+        android:id="@+id/buttonChangerServeur"
+        android:layout_marginTop="440dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:text="Changer de serveur"
+        android:src="@drawable/bouton_realm" />
+</RelativeLayout>
