@@ -24,6 +24,10 @@ public class Item {
         this.Image = Image;
     }
 
+    public Item() {
+
+    }
+
     // ---
     // GETTERS/SETTERS
     // ---

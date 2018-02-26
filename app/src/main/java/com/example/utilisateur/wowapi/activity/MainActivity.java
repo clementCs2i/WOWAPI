@@ -12,8 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -22,13 +20,10 @@ import android.widget.Toast;
 
 import com.example.utilisateur.wowapi.AdapterListView.ItemsRecyclerAdapter;
 import com.example.utilisateur.wowapi.ConverterJSON.JSONConverter;
+import com.example.utilisateur.wowapi.SQLite.DatabaseHandler;
 import com.example.utilisateur.wowapi.R;
 import com.example.utilisateur.wowapi.RecyclerViewClickListener;
 import com.example.utilisateur.wowapi.RecyclerViewTouchListener;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -46,11 +41,12 @@ import com.example.utilisateur.wowapi.entity.Item;
 public class MainActivity extends AppCompatActivity {
 ProgressBar progressebar ;EditText nameItem;
 TextView TextServeur;
-    ArrayAdapter<String> adapter;
-    ArrayList<String> listdata = new ArrayList<String>();
+
     RecyclerView listView1;
-    List<Item> Items =null;
-    ItemsRecyclerAdapter adapters = null;
+    List<Item> Items  = new ArrayList<>();
+    List<Item> ItemsFav  = new ArrayList<>();
+    DatabaseHandler db = null;
+            ItemsRecyclerAdapter adapters = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +57,9 @@ TextView TextServeur;
         TextServeur = (TextView) findViewById(R.id.TextServeur);
         progressebar = (ProgressBar)  findViewById(R.id.ProgresseBar);
         progressebar.setVisibility(View.GONE);
+        db = new DatabaseHandler(this);
         ImageButton button= (ImageButton) findViewById(R.id.buttonChangerServeur);
         button.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ListeRealms.class);
@@ -79,12 +75,18 @@ TextView TextServeur;
 
             public void onTextChanged(CharSequence s, int start, int before,int count) {
 
+
                 ArrayList<Item> myQuoteList = new ArrayList<Item>();
                 ItemsRecyclerAdapter adapter = new ItemsRecyclerAdapter(MainActivity.this, R.layout.item_item, myQuoteList);
                 listView1.setAdapter(adapter);
                 if (!s.toString().equals("")) {
                     progressebar.setVisibility(View.VISIBLE);
                     AfficheRechercheNom(s.toString());
+
+                }else{
+
+                  AffichePreferenceNameItem();
+
                 }
 
 
@@ -100,17 +102,24 @@ TextView TextServeur;
 
         });
 
-        VerifServeurName();
-       // AffichePreferenceNameItem();
-
         listView1.addOnItemTouchListener(new RecyclerViewTouchListener(getApplicationContext(), listView1, new RecyclerViewClickListener() {
 
             @Override
             public void onClick(View view, int position) {
-                Intent intent = new Intent(MainActivity.this, ListeAuctions.class);
+                Boolean ItemPresent = false;
                 String idItem = Integer.toString(Items.get(position).getId());
+                Item Item =db.getItemId(Items.get(position).getId());
+                if(Item ==null){
+                    db.addItem(new Item(Items.get(position).getName(), Items.get(position).getId(),Items.get(position).getImage()));
+
+                }
+
+                Intent intent = new Intent(MainActivity.this, ListeAuctions.class);
                 intent.putExtra("idItem",idItem);
                 startActivity(intent);
+
+
+
 
 
             }
@@ -121,11 +130,11 @@ TextView TextServeur;
 
             }
         }));
-
+        VerifServeurName();
+        AffichePreferenceNameItem();
 
 
     }
-
 
 
     public void AfficheRechercheNom(String s){
@@ -178,33 +187,8 @@ TextView TextServeur;
 
                     @Override
                     public void run() {
-                        listdata.clear();
-
                         listView1.setAdapter(null);
-                        JSONArray jsonArray = null;
-                        try {
-                            jsonArray = new JSONArray(text);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-
-
-                        if (jsonArray != null) {
-                            for (int i=0;i<jsonArray.length();i++){
-                                try {
-                                    JSONObject obj = new JSONObject(jsonArray.getString(i));
-
-
-                                    listdata.add(obj.getString("name"));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-
                         Items = JSONConverter.convertItems(text);
-//                        adapters.annulAsynctask();
                         adapters = new ItemsRecyclerAdapter(MainActivity.this, R.layout.item_item, Items);
                         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
                         listView1.setLayoutManager(mLayoutManager);
@@ -219,15 +203,14 @@ TextView TextServeur;
 );
     }
     public void AffichePreferenceNameItem(){
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        //String vals = null;
-       // vals = prefsgetString("ListItem","");
-       // Toast.makeText(this, vals, Toast.LENGTH_SHORT).show();
-       // String[] ary = vals.split(",");
 
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
-         //       android.R.layout.simple_list_item_1, ary);
-       // listView1.setAdapter(adapter);
+            Items = db.getAllContacts();
+
+            adapters = new ItemsRecyclerAdapter(MainActivity.this, R.layout.item_item, Items);
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+            listView1.setLayoutManager(mLayoutManager);
+            listView1.setItemAnimator(new DefaultItemAnimator());
+            listView1.setAdapter(adapters);
         }
     public void VerifServeurName(){
         SharedPreferences prefsd = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);

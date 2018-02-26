@@ -90,4 +90,36 @@ public class JSONConverter {
 
         return Items;
     }
+    public static Item convertItem(String jsonString) {
+        Item Items =null;
+
+        JSONArray jsonArray = null;
+        try {
+            jsonArray = new JSONArray(jsonString);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
+        if (jsonArray != null) {
+
+                try {
+                    JSONObject obj = new JSONObject(jsonArray.getString(0));
+
+
+                     Items = new Item(obj.getString("name"),obj.getInt("id"),obj.getString("icon"));
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+        }
+
+
+
+
+
+        return Items;
+    }
 }
