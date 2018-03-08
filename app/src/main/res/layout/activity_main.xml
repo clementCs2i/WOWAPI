@@ -56,4 +56,5 @@
         android:background="@null"
         android:text="Changer de serveur"
         android:src="@drawable/bouton_realm" />
+
 </RelativeLayout>

@@ -1,7 +1,9 @@
 package com.example.utilisateur.wowapi.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -11,10 +13,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,14 +48,14 @@ import okhttp3.Response;
 import com.example.utilisateur.wowapi.entity.Item;
 
 public class MainActivity extends AppCompatActivity {
-ProgressBar progressebar ;EditText nameItem;
-TextView TextServeur;
-
+    ProgressBar progressebar ;EditText nameItem;
+    TextView TextServeur;
     RecyclerView listView1;
     List<Item> Items  = new ArrayList<>();
     List<Item> ItemsFav  = new ArrayList<>();
     DatabaseHandler db = null;
-            ItemsRecyclerAdapter adapters = null;
+    ItemsRecyclerAdapter adapters = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +67,7 @@ TextView TextServeur;
         progressebar = (ProgressBar)  findViewById(R.id.ProgresseBar);
         progressebar.setVisibility(View.GONE);
         db = new DatabaseHandler(this);
+
         ImageButton button= (ImageButton) findViewById(R.id.buttonChangerServeur);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,14 +84,24 @@ TextView TextServeur;
             }
 
             public void onTextChanged(CharSequence s, int start, int before,int count) {
+                String NameItem  = s.toString();
+                int tailleNameItem = NameItem.length();
+                String NameItemRecherche  = s.toString();
+                if (tailleNameItem > 0){
+                    NameItem= NameItem.substring(0,1);
+                    NameItem=NameItem.toUpperCase();
+                }
 
 
+                if (tailleNameItem > 1){
+                    NameItem=  NameItem.concat(NameItemRecherche.substring(1));
+                }
                 ArrayList<Item> myQuoteList = new ArrayList<Item>();
                 ItemsRecyclerAdapter adapter = new ItemsRecyclerAdapter(MainActivity.this, R.layout.item_item, myQuoteList);
                 listView1.setAdapter(adapter);
                 if (!s.toString().equals("")) {
                     progressebar.setVisibility(View.VISIBLE);
-                    AfficheRechercheNom(s.toString());
+                    AfficheRechercheNom(NameItem);
 
                 }else{
 
@@ -126,7 +146,10 @@ TextView TextServeur;
 
             @Override
             public void onLongClick(View view, int position) {
-                Toast.makeText(getApplicationContext(),  " is long pressed!", Toast.LENGTH_SHORT).show();
+                final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromInputMethod(view.getWindowToken(), 0);
+                showItemDescription();
+
 
             }
         }));
@@ -134,8 +157,40 @@ TextView TextServeur;
         AffichePreferenceNameItem();
 
 
-    }
 
+
+
+
+
+
+    }
+    private void showItemDescription(){
+
+        //We need to get the instance of the LayoutInflater, use the context of this activity
+        LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        //Inflate the view from a predefined XML layout (no need for root id, using entire layout)
+        View layout = inflater.inflate(R.layout.item_description,null);
+        //Get the devices screen density to calculate correct pixel sizes
+        float density=MainActivity.this.getResources().getDisplayMetrics().density;
+        // create a focusable PopupWindow with the given layout and correct size
+        final PopupWindow pw = new PopupWindow(layout, (int)density*350, (int)density*400, true);
+        //Button to close the pop-up
+
+        //Set up touch closing outside of pop-up
+        pw.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        pw.setTouchInterceptor(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_OUTSIDE) {
+                    pw.dismiss();
+                    return true;
+                }
+                return false;
+            }
+        });
+        pw.setOutsideTouchable(true);
+        // display the pop-up in the center
+        pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
+    }
 
     public void AfficheRechercheNom(String s){
         OkHttpClient client = new OkHttpClient();
