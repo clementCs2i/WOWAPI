@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="350dp"
-    android:layout_height="300dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
     <LinearLayout
@@ -16,35 +16,37 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_margin="20dp">
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="5dp"
+           >
             <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginTop="5dp"
+                android:id="@+id/ImageItem"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="10dp"
                 android:layout_centerHorizontal="true"
-
                 app:srcCompat="@mipmap/ic_launcher" />
             <ImageView
-                android:id="@+id/image"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:id="@+id/ImageCadre"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:layout_centerHorizontal="true"
-
                 app:srcCompat="@drawable/cadre_large" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
-    <TextView
-        android:id="@+id/ItemName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Flacon du pacte murmuré"
-       android:layout_marginTop="115dp"
-        android:textSize="15dp"
-        android:fontFamily=" Verdana, Open Sans, Arial, Helvetica Neue, Helvetica, sans-serif;"
-        android:textColor="#ffffff"
+             <TextView
+                 android:id="@+id/ItemName"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="Flacon du pacte murmuré"
+                 android:layout_marginTop="90dp"
+                 android:textSize="15dp"
+                 android:fontFamily=" Verdana, Open Sans, Arial, Helvetica Neue, Helvetica, sans-serif;"
+                 android:textColor="#ffffff"
         />
             <TextView
                 android:id="@+id/itemLVL"
@@ -79,6 +81,7 @@
                 android:textColor="#ffff"
                 />
                 <TextView
+                    android:id="@+id/Stack"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Empilement maxi: 20"
@@ -86,14 +89,66 @@
                     android:fontFamily=" Verdana, Open Sans, Arial, Helvetica Neue, Helvetica, sans-serif;"
                     android:textColor="#ffff"
                     />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
                 <TextView
+                    android:id="@+id/LibPrix"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Prix de Vente: 25 "
+                    android:text="Prix de Vente: "
                     android:textSize="12dp"
                     android:fontFamily=" Verdana, Open Sans, Arial, Helvetica Neue, Helvetica, sans-serif;"
                     android:textColor="#ffff"
                     />
+                <TextView
+                    android:id="@+id/PrixGold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2"
+                    android:textSize="12dp"
+                    android:fontFamily=" Verdana, Open Sans, Arial, Helvetica Neue, Helvetica, sans-serif;"
+                    android:textColor="#ffff"
+                    />
+                <ImageView
+                    android:id="@+id/ImageGold"
+                    android:layout_width="40px"
+                    android:layout_height="40px"
+                    android:layout_centerHorizontal="true"
+                    app:srcCompat="@drawable/money_gold" />
+                <TextView
+                    android:id="@+id/PrixSilver"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2"
+                    android:textSize="12dp"
+                    android:fontFamily=" Verdana, Open Sans, Arial, Helvetica Neue, Helvetica, sans-serif;"
+                    android:textColor="#ffff"
+                    />
+                <ImageView
+                    android:id="@+id/ImageSilver"
+                    android:layout_width="40px"
+                    android:layout_height="40px"
+                    android:layout_centerHorizontal="true"
+                    app:srcCompat="@drawable/money_silver" />
+                <TextView
+                    android:id="@+id/PrixBronze"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2"
+                    android:textSize="12dp"
+                    android:fontFamily=" Verdana, Open Sans, Arial, Helvetica Neue, Helvetica, sans-serif;"
+                    android:textColor="#ffff"
+                    />
+                <ImageView
+                    android:id="@+id/ImageBronze"
+                    android:layout_width="40px"
+                    android:layout_height="40px"
+                    android:layout_centerHorizontal="true"
+                    app:srcCompat="@drawable/money_copper" />
+            </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>

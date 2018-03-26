@@ -1,9 +1,6 @@
 package com.example.utilisateur.wowapi.entity;
 
-/**
- * Taux d'une devise
- * Created by Hervé
- */
+
 
 public class Item {
 
@@ -14,14 +11,29 @@ public class Item {
     private String Name;
     private int Id;
     private String Image;
+    private String Description;
+    private int ItemLvl;
+    private int  Stack;
+    private int Prix;
 
     // ---
     // CONSTRUCTEURS
     // ---
-    public Item(String Name, int Id,String Image) {
-        this.Name = Name;
-        this.Id = Id;
-        this.Image = Image;
+
+
+    public Item(String name, int id, String image, String description, int itemLvl, int stack, int prix) {
+        Name = name;
+        Id = id;
+        Image = image;
+        Description = description;
+        ItemLvl = itemLvl;
+        Stack = stack;
+        Prix = prix;
+    }
+    public Item(String name, int id, String image) {
+        Name = name;
+        Id = id;
+        Image = image;
     }
 
     public Item() {
@@ -56,8 +68,38 @@ public class Item {
         Image = image;
     }
 
+    public String getDescription() {
+        return Description;
+    }
 
-    // ---
+    public void setDescription(String description) {
+        Description = description;
+    }
+
+    public int getItemLvl() {
+        return ItemLvl;
+    }
+
+    public void setItemLvl(int itemLvl) {
+        ItemLvl = itemLvl;
+    }
+
+    public int getStack() {
+        return Stack;
+    }
+
+    public void setStack(int stack) {
+        Stack = stack;
+    }
+
+    public int getPrix() {
+        return Prix;
+    }
+
+    public void setPrix(int prix) {
+        Prix = prix;
+    }
+// ---
     // DIVERS
     // ---
 

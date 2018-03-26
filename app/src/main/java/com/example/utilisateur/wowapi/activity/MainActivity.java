@@ -3,6 +3,8 @@ package com.example.utilisateur.wowapi.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -18,28 +20,27 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.utilisateur.wowapi.AdapterListView.ItemsRecyclerAdapter;
 import com.example.utilisateur.wowapi.ConverterJSON.JSONConverter;
 import com.example.utilisateur.wowapi.SQLite.DatabaseHandler;
 import com.example.utilisateur.wowapi.R;
 import com.example.utilisateur.wowapi.RecyclerViewClickListener;
 import com.example.utilisateur.wowapi.RecyclerViewTouchListener;
-
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -126,10 +127,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view, int position) {
-                Boolean ItemPresent = false;
+
                 String idItem = Integer.toString(Items.get(position).getId());
                 Item Item =db.getItemId(Items.get(position).getId());
-                if(Item ==null){
+                if(Item == null){
                     db.addItem(new Item(Items.get(position).getName(), Items.get(position).getId(),Items.get(position).getImage()));
 
                 }
@@ -138,17 +139,13 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("idItem",idItem);
                 startActivity(intent);
 
-
-
-
-
             }
 
             @Override
             public void onLongClick(View view, int position) {
                 final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromInputMethod(view.getWindowToken(), 0);
-                showItemDescription();
+                showItemDescription(position);
 
 
             }
@@ -164,8 +161,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    private void showItemDescription(){
-
+private void showItemDescription(int position){
+// Création du pupup
         //We need to get the instance of the LayoutInflater, use the context of this activity
         LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         //Inflate the view from a predefined XML layout (no need for root id, using entire layout)
@@ -173,8 +170,7 @@ public class MainActivity extends AppCompatActivity {
         //Get the devices screen density to calculate correct pixel sizes
         float density=MainActivity.this.getResources().getDisplayMetrics().density;
         // create a focusable PopupWindow with the given layout and correct size
-        final PopupWindow pw = new PopupWindow(layout, (int)density*350, (int)density*400, true);
-        //Button to close the pop-up
+        final PopupWindow pw = new PopupWindow(layout, (int)density*350, (int)density*300, true);
 
         //Set up touch closing outside of pop-up
         pw.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -190,7 +186,53 @@ public class MainActivity extends AppCompatActivity {
         pw.setOutsideTouchable(true);
         // display the pop-up in the center
         pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
+    // Alimentation de la pupup
+    //Affichage de l'image
+    ImageView icon = (ImageView) layout.findViewById(R.id.ImageItem);
+    String URL = String.valueOf(Items.get(position).getImage());
+    icon.setTag(URL);
+    AsyncTaskImagePopup AsyncTask=new AsyncTaskImagePopup();
+    if(AsyncTask.getStatus().equals(AsyncTaskImagePopup.Status.RUNNING))
+    {
+        AsyncTask.cancel(true);
     }
+    AsyncTask.execute(icon);
+
+    //Affichage des texts
+    TextView Name = (TextView) layout.findViewById(R.id.ItemName);
+    TextView description = (TextView) layout.findViewById(R.id.description);
+    TextView stack = (TextView) layout.findViewById(R.id.Stack);
+    TextView prixGold = (TextView) layout.findViewById(R.id.PrixGold);
+    TextView prixSilver = (TextView) layout.findViewById(R.id.PrixSilver);
+
+    TextView prixBronze = (TextView) layout.findViewById(R.id.PrixBronze);
+
+    TextView lvl = (TextView) layout.findViewById(R.id.itemLVL);
+
+    Name.setText(Items.get(position).getName());
+    description.setText(Items.get(position).getDescription());
+
+    stack.setText("Empilement "+Items.get(position).getStack());
+
+
+    double prixItem = Items.get(position).getPrix();
+
+    double PrixGold =prixItem/10000;
+    int Gold = (int)PrixGold;
+    prixGold.setText(Integer.toString(Gold));
+
+    double PrixSilver =(prixItem-Gold*10000)/100;
+    int Silver = (int)PrixSilver;
+    prixSilver.setText(Integer.toString(Silver));
+
+    double PrixBronze =prixItem-Gold*10000-Silver*100;
+    int Bronze = (int)PrixBronze;
+    prixBronze.setText(Integer.toString(Bronze));
+
+    lvl.setText("Niveau d'objet "+Items.get(position).getItemLvl());
+
+
+}
 
     public void AfficheRechercheNom(String s){
         OkHttpClient client = new OkHttpClient();
@@ -277,51 +319,43 @@ public class MainActivity extends AppCompatActivity {
             TextServeur.setText("Serveur : "+ServeurName);
         }}
 
-    private class AsyncTaskRunner extends AsyncTask<String, String, String> {
-    @Override
-    protected String doInBackground(String... params){
-        OkHttpClient client = new OkHttpClient();
-        // client.dispatcher().cancelAll();
 
-        Request request = new Request.Builder()
-                .url("http://91.160.186.17:3000/itemName")
-                .get()
-                .addHeader("item", "R")
-                .build();
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
+
+
+    class AsyncTaskImagePopup extends AsyncTask<ImageView, Void, Bitmap> {
+        ImageView imageView = null;
+        String urlImg = "";
+        public void returnNameImg(){
+            this.urlImg = "http://wow.zamimg.com/images/wow/icons/large/"+imageView.getTag().toString()+".jpg";
+        }
+        @Override
+        protected Bitmap doInBackground(ImageView... imageViews){
+            this.imageView = imageViews[0];
+            returnNameImg();
+            HttpURLConnection httpConn = null;
+            int resCode = 0;
+            Bitmap bitmap = null;
+            try {
+                URL url = new URL(urlImg);
+                httpConn = (HttpURLConnection) url.openConnection();
+                httpConn.connect();
+                resCode = httpConn.getResponseCode();
+                if (resCode == HttpURLConnection.HTTP_OK) {
+                    InputStream in = httpConn.getInputStream();
+                    bitmap = BitmapFactory.decodeStream(in);
+
+
+                }
+
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            return bitmap;
+        }
+        protected void onPostExecute(Bitmap result){
 
-                final String text = response.body().string();
-
-                if (!response.isSuccessful()) {
-                    throw new IOException("Unexpected code " + response);
-
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Toast.makeText(MainActivity.this, text, Toast.LENGTH_LONG).show();
-
-
-
-
-                    }
-                });
-
-                // you code to handle response
-            }}
-        );
-
-        return "";
-    }
-    protected void onPostExecute(String result){
-        super.onPostExecute(result);
-    }
-}}
+            imageView.setImageBitmap(result);
+        }
+    }}

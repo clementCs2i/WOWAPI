@@ -2,15 +2,19 @@ package com.example.utilisateur.wowapi.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.utilisateur.wowapi.AdapterListView.AuctionsRecyclerAdapter;
 import com.example.utilisateur.wowapi.ConverterJSON.JSONConverter;
+import com.example.utilisateur.wowapi.HorizontalLineItemDecoration;
 import com.example.utilisateur.wowapi.R;
 import com.example.utilisateur.wowapi.entity.Auctions;
 
@@ -34,13 +38,17 @@ import okhttp3.Response;
  */
 
 public class ListeAuctions extends AppCompatActivity {
-
+    ProgressBar progressebar ;
     RecyclerView ListAuction;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.auctions);
         final Intent intent = getIntent();
+
+        progressebar = (ProgressBar)  findViewById(R.id.ProgresseBar);
+        progressebar.setVisibility(View.VISIBLE);
+
         String idItem = intent.getStringExtra("idItem");
         ListAuction = (RecyclerView) findViewById(R.id.rate_list);
         SharedPreferences prefsd = PreferenceManager.getDefaultSharedPreferences(ListeAuctions.this);
@@ -95,6 +103,8 @@ public class ListeAuctions extends AppCompatActivity {
                         // Définir le layout de RecyclerView
                         // rateList.setLayoutManager(new LinearLayoutManager(this));
                         ListAuction.setLayoutManager(new GridLayoutManager(ListeAuctions.this, 1));
+                        ListAuction.addItemDecoration(new HorizontalLineItemDecoration(Color.GRAY));
+                        progressebar.setVisibility(View.GONE);
 
                     }
                 });

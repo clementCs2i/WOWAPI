@@ -59,10 +59,30 @@ public class AuctionsRecyclerAdapter extends RecyclerView.Adapter<AuctionsRecycl
         Auctions auctions = mAuctionses.get(position);
 
         // Transférer les valeurs de taux dans le ViewHolder
-        holder.codeView.setText(auctions.getCode());
-        holder.valueView.setText(String.valueOf(auctions.getValue()));
-    }
+        holder.Vendeur.setText(auctions.getVendeur());
 
+        double prixItem = auctions.getPrixDirect();
+
+        double PrixGold =prixItem/10000;
+
+        holder.PrixAchat.setText(Double.toString(round(PrixGold, 2)));
+
+        double prixEnchere = auctions.getPrixEnchere();
+
+        double prixdeEnchere =prixEnchere/10000;
+        holder.PrixEnchere.setText(Double.toString(round(prixdeEnchere, 2)));
+
+        holder.quantity.setText(Integer.toString(auctions.getQuantite()));
+                holder.nbEnchere.setText(Integer.toString(auctions.getNbEnchere()));
+    }
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
+    }
     /**
      * Nombre d'éléments gérés par l'adapter
      * @return  Nombre de taux
@@ -79,16 +99,24 @@ public class AuctionsRecyclerAdapter extends RecyclerView.Adapter<AuctionsRecycl
         // Les vues d'une bande horizontale
 
         //@BindView(R.id.rate_code)
-        TextView codeView;
+        TextView Vendeur;
         //@BindView(R.id.rate_value)
-        TextView valueView;
 
+        TextView PrixAchat;
+        TextView PrixEnchere;
+        TextView quantity;
+        TextView nbEnchere;
         public ViewHolder(View itemView) {
             super(itemView);
 
             // Instancier les 2 TextViews : version classique
-             codeView = (TextView)itemView.findViewById(R.id.rate_code);
-             valueView = (TextView)itemView.findViewById(R.id.rate_value);
+             Vendeur = (TextView)itemView.findViewById(R.id.rate_code);
+            PrixAchat = (TextView)itemView.findViewById(R.id.PrixAchat);
+            PrixEnchere = (TextView)itemView.findViewById(R.id.PrixEnchere);
+
+            quantity = (TextView)itemView.findViewById(R.id.quantity);
+            nbEnchere = (TextView)itemView.findViewById(R.id.nbEnchere);
+
 
             // Instancier les 2 TextViews : version ButterKnife
            // ButterKnife.bind(this, itemView);
